@@ -1,5 +1,6 @@
 import logging
 import time
+import sys
 from datetime import datetime
 
 _LOGGER = logging.getLogger(__name__)
@@ -10,11 +11,11 @@ class Meter(object):
     This is a collection of meter data that we care about.
     """
 
-    def __init__(self, api_interface, meter_type, meter_id, meter_start_date, update_interval):
+    def __init__(self, api_interface, meter_type, meter_id, update_interval):
         self.api = api_interface
         self.type = meter_type
         self.id = meter_id
-        self.start_date = meter_start_date
+        self.start_date = datetime.today().strftime("%m / %d / %Y")
         self.update_interval = 10
         if update_interval > 10:
             self.update_interval = update_interval
@@ -36,7 +37,10 @@ class Meter(object):
         self.total_gas = _dict.get("GasUsed")
         self.average_gas = _dict.get("AvgGasUsed")
 
+
     def set_chart_usage(self, _dict):
+        print(_dict)
+        sys.exit()
         unit1 = _dict.get("unitOfMeasure1")
         unit2 = _dict.get("unitOfMeasure2")
         if unit1:
@@ -88,4 +92,3 @@ class Meter(object):
             self.date = datetime.now()
             self.api.get_billing_info(self)
             self.api.get_usage_chart_data(self)
-
