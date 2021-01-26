@@ -28,7 +28,7 @@ class Meter(object):
         self.update(True)
 
     def get_daily_usage(self,days):
-        tree = ET.parse('data.xml')
+        tree = ET.parse(self.id + '.xml')
         root = tree.getroot()
 
         data_dict={}
