@@ -6,10 +6,14 @@ Python3 interface to the unofficial Duke Energy API.
 ```python
 from pydukeenergy.api import DukeEnergy
 
-def main():
-	# update_interval is optional default is 60 minutes
-    duke = DukeEnergy("your_user_name", "your_password", update_interval=60)
-    meters = duke.get_meters()
-    for meter in meters:
-    	print(meter.get_usage())
+duke = DukeEnergy(username, password, electric_meters=[xxx],update_interval=60,verify_ssl=False)
+meters = duke.get_meters()
+for meter in meters:
+    print (meter.get_daily_usage(1)) #1 Day ago Usage in kWh
+    print (meter.get_daily_usage(2)) #2 Day ago Usage in kWh
+    print (meter.get_daily_usage(3)) #3 Day ago Usage in kWh
+    print (meter.get_daily_usage(4)) #etc..
+    print (meter.get_daily_usage(5))
+    print (meter.get_daily_usage(6))
+
 ```
