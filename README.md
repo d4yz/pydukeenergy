@@ -3,6 +3,11 @@ Python3 interface to the unofficial Duke Energy API.
 
 **NOTE** This isn't using an official API therefore this library could stop working at any time, without warning.
 
+This script will click on the "Download my Data" button that is on the Duke Energy Usage Analysis page (https://www.duke-energy.com/my-account/usage-analysis)
+
+It will download the XML of all your data which has been updated every 15/30/60 minutes depending on the smart meter installed.
+
+**Example Code**
 ```python
 from pydukeenergy.api import DukeEnergy
 
