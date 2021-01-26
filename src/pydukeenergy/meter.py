@@ -76,6 +76,6 @@ class Meter(object):
 
     def update(self, force=False):
         if ((datetime.now() - self.date).seconds / 60 >= self.update_interval) or force:
-            _LOGGER.info("Getting new meter info")
+            _LOGGER.info("Getting new meter info for Meter #" + self.id)
             self.date = datetime.now()
             self.api.download_data(self)
