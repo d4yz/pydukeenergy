@@ -65,15 +65,6 @@ class Meter(object):
             
         return (round(total,2))
 
-    def get_total(self):
-        if self.type == "ELECTRIC":
-            return self.total_kwh
-        elif self.type == "GAS":
-            return self.total_gas
-        else:
-            _LOGGER.error("Invalid meter type {}".format(self.type))
-
-
     def update(self, force=False):
         if ((datetime.now() - self.date).seconds / 60 >= self.update_interval) or force:
             _LOGGER.info("Getting new meter info for Meter #" + self.id)
