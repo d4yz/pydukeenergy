@@ -68,61 +68,9 @@ class DukeEnergy(object):
         self._get_meters()
         return self.meters
 
-    def get_billing_info(self, meter):
-        """
-        Pull the billing info for the meter.
-        """
-        if self.session.cookies or self._login():
-            post_body = {"MeterNumber": f"{meter.type} - {meter.id}"}
-            headers = USAGE_ANALYSIS_HEADERS.copy()
-            headers.update(USER_AGENT)
-            response = self.session.post(BILLING_INFORMATION_URL, data=json.dumps(post_body), headers=headers,
-                                         timeout=10, verify=self.verify)
-            _LOGGER.debug(str(response.content))
-            try:
-                if response.status_code != 200:
-                    _LOGGER.error("Billing info request failed: " + response.status_code)
-                    self._logout()
-                    return False
-                if response.json()["Status"] == "ERROR":
-                    self._logout()
-                    return False
-                if response.json()["Status"] == "OK":
-                    meter.set_billing_usage(response.json()["Data"][-1])
-                    return True
-                else:
-                    _LOGGER.error("Status was {}".format(response.json()["Status"]))
-                    self._logout()
-                    return False
-            except Exception as e:
-                _LOGGER.exception("Something went wrong. Logging out and trying again.")
-                self._logout()
-                return False
 
-    def get_usage_chart_data(self, meter):
-        """
-        billing_frequency ["Week", "Billing Cycle", "Month"]
-        graph ["hourlyEnergyUse", "DailyEnergy", "averageEnergyByDayOfWeek"]
-        """
-        if datetime.today().weekday() == 6:
-            the_date = meter.date - timedelta(days=1)
-        else:
-            the_date = meter.date
-        #~ if self.session.cookies or self._login():
-            #~ post_body = {
-                #~ "Graph": "DailyEnergy",
-                #~ "BillingFrequency": "Billing Cycle",
-                #~ "GraphText": "Daily Energy and Avg. ",
-                #~ "Date": meter.start_date,
-                #~ "MeterNumber": meter.type + " - " + meter.id,
-                #~ "ActiveDate": "11/18/2019"
-            #~ }
-            #~ headers = USAGE_ANALYSIS_HEADERS.copy()
-            #~ headers.update(USER_AGENT)
-            #~ response = self.session.post(USAGE_CHART_URL, data=json.dumps(post_body), headers=headers, 
-                                        #~ timeout=10, verify=self.verify)
-            #~ _LOGGER.debug(str(response.content))
-            
+    def download_data(self, meter):
+
         if self.session.cookies or self._login():
             post_body = {
                 "MeterNumber": meter.type + " - " + meter.id,
@@ -137,14 +85,13 @@ class DukeEnergy(object):
 
             try:
                 if response.status_code != 200:
-                    _LOGGER.error("Usage data request failed: " + response.status_code)
+                    _LOGGER.error("Download data request failed: " + response.status_code)
                     self._logout()
                     return False
                 else:
-                    open('data.xml', 'w').write(response.text)
+                    open(meter.id + '.xml', 'w').write(response.text)
                     return True
             except Exception as e:
-                print ("dsg")
                 _LOGGER.exception("Something went wrong. Logging out and trying again.")
                 self._logout()
                 return False
