@@ -21,4 +21,8 @@ for meter in meters:
     print (meter.get_daily_usage(5))
     print (meter.get_daily_usage(6))
 
+    print (meter.get_monthly_usage(0)) # Get Current Month Total Usage
+    print (meter.get_monthly_usage(1)) # 1 Month ago Total Usage
+    print (meter.get_monthly_usage(2))
+
 ```
