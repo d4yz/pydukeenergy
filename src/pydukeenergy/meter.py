@@ -27,7 +27,8 @@ class Meter(object):
         self.date = datetime.now()
         self.update(True)
 
-    def get_daily_usage(self,days):
+
+    def load_xml_to_mem(self):
         tree = ET.parse(self.id + '.xml')
         root = tree.getroot()
 
@@ -44,6 +45,11 @@ class Meter(object):
                             data_value = child3.text
                             data_dict.update({data_time: data_value})
 
+        self.data_xml = data_dict
+
+    def get_daily_usage(self,days):
+        
+
 
         yesterday = datetime.now() - timedelta(days)
 
@@ -59,9 +65,9 @@ class Meter(object):
 
 
         total=0
-        for x in data_dict.keys():
+        for x in self.data_xml.keys():
             if ((int(x) >= yesterday_beginning) and (int(x) <= (yesterday_end))):
-                total += float(data_dict[x])
+                total += float(self.data_xml[x])
             
         return (round(total,2))
 
@@ -70,3 +76,4 @@ class Meter(object):
             _LOGGER.info("Getting new meter info for Meter #" + self.id)
             self.date = datetime.now()
             self.api.download_data(self)
+            self.load_xml_to_mem()
