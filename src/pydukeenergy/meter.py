@@ -48,28 +48,21 @@ class Meter(object):
         self.data_xml = data_dict
 
     def get_daily_usage(self,days):
-        
+        daily_date = datetime.now() - timedelta(days)
 
+        daily_unix_beginning = datetime(daily_date.year, daily_date.month, daily_date.day,0,0,0,0)
+        daily_unix_beginning = int(daily_unix_beginning.replace(tzinfo=timezone.utc).timestamp())
 
-        yesterday = datetime.now() - timedelta(days)
+        daily_unix_end = datetime(daily_date.year, daily_date.month, daily_date.day,23,59,59,999)
+        daily_unix_end = int(daily_unix_end.replace(tzinfo=timezone.utc).timestamp())
 
-        yesterday_beginning = datetime(yesterday.year, yesterday.month, yesterday.day,0,0,0,0)
-        yesterday_beginning = int(yesterday_beginning.replace(tzinfo=timezone.utc).timestamp())
+        total_usage = 0
 
-
-
-        yesterday_end = datetime(yesterday.year, yesterday.month, yesterday.day,23,59,59,999)
-        yesterday_end = int(yesterday_end.replace(tzinfo=timezone.utc).timestamp())
-
-
-
-
-        total=0
         for x in self.data_xml.keys():
-            if ((int(x) >= yesterday_beginning) and (int(x) <= (yesterday_end))):
-                total += float(self.data_xml[x])
+            if ((int(x) >= daily_unix_beginning) and (int(x) <= (daily_unix_end))):
+                total_usage += float(self.data_xml[x])
             
-        return (round(total,2))
+        return (round(total_usage,2))
 
     def update(self, force=False):
         if ((datetime.now() - self.date).seconds / 60 >= self.update_interval) or force:
