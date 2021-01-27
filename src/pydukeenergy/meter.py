@@ -6,6 +6,7 @@ from datetime import datetime
 from datetime import timezone 
 from datetime import timedelta 
 import time
+from calendar import monthrange
 import xml.etree.ElementTree as ET
 
 _LOGGER = logging.getLogger(__name__)
@@ -63,6 +64,36 @@ class Meter(object):
                 total_usage += float(self.data_xml[x])
             
         return (round(total_usage,2))
+
+    def get_monthly_usage(self, months_back):
+        today = datetime.now()
+
+        subtracted_month=today.month - months_back
+
+        while subtracted_month <= 0:
+            subtracted_month += 12
+            today=today.replace(today.year -1)
+                
+        date_months_back = today.replace(month = subtracted_month)
+
+        
+        month_beginning = datetime(date_months_back.year, date_months_back.month, 1,0,0,0,0)
+        month_beginning = int(month_beginning.replace(tzinfo=timezone.utc).timestamp())
+
+        days_in_month = monthrange(date_months_back.year, date_months_back.month)[1]
+
+        month_end = datetime(date_months_back.year, date_months_back.month, days_in_month,23,59,59,999)
+        month_end = int(month_end.replace(tzinfo=timezone.utc).timestamp())
+
+        total_usage = 0
+
+        for x in self.data_xml.keys():
+            if ((int(x) >= month_beginning) and (int(x) <= (month_end))):
+                total_usage += float(self.data_xml[x])
+            
+        return (round(total_usage,2))
+        
+
 
     def update(self, force=False):
         if ((datetime.now() - self.date).seconds / 60 >= self.update_interval) or force:
